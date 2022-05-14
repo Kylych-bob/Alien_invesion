@@ -6,10 +6,10 @@ from bullet import Bullet
 from alien import Alien
 from time import sleep
 from button import Button
+from scoreboard import Scoreboard
 
 from game_stats import GameStats
 from settings import Settings
-
 
 
 class AlienInvasion:
@@ -28,12 +28,16 @@ class AlienInvasion:
         # self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption('Alien Invasion')
         self.ship = Ship(self)
-        self.stats = GameStats(self)
         self.play_button = Button(self, 'Play')
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
 
         self._create_fleet()
+
+        # Создание экземпляров для хранения статистики
+        # и панели результатов.
+        self.stats = GameStats(self)
+        self.sb = Scoreboard(self)
 
     def run_game(self):
         """Запуск основного цикла игры."""
@@ -73,9 +77,11 @@ class AlienInvasion:
 
             self._create_fleet()
             self.ship.center_ship()
+            self.sb.prep_score()
+
+            self.settings.initialize_dynamic_settings()
 
             pygame.mouse.set_visible(False)
-
 
     def _check_keydown_events(self, event):
         """Реагирует на нажатие клавиш."""
@@ -101,6 +107,7 @@ class AlienInvasion:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
+        self.sb.show_score()
 
         # Кнопка Play отображается в том случае, если игра неактивна.
         if not self.stats.game_active:
@@ -181,9 +188,16 @@ class AlienInvasion:
     def _check_bullet_alien_collisions(self):
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.aliens, True, True)
+        if collisions:
+            for alien in collisions.values():
+                self.stats.score += self.settings.alien_points * len(alien)
+
+            self.sb.prep_score()
+            # self.sb.check_high_score()
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
 
     def _ship_hit(self):
         if self.stats.ships_left > 0:
@@ -206,7 +220,6 @@ class AlienInvasion:
             if alien.rect.bottom >= screen_rect.bottom:
                 self._ship_hit()
                 break
-
 
 
 if __name__ == '__main__':
