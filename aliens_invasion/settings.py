@@ -1,8 +1,5 @@
 class Settings:
     """Класс для хранения всех настроек игры Alien Invasion."""
-
-
-
     def __init__(self):
         """Инициализирует настройки игры."""
         # Параметры экрана
@@ -19,7 +16,13 @@ class Settings:
 
         # Скорость корабля
         self.ship_speed = 1.5
+        self.ship_limit = 3
 
+        # Настройки пришельцев
+        self.alien_speed = 0.5
+        self.fleet_drop_speed = 10
+        # fleet_direction = 1 обозначает движение вправо; а -1 - влево.
+        self.fleet_direction = 1
 
 
 
