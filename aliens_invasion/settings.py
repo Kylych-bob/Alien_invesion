@@ -28,7 +28,7 @@ class Settings:
         self.speedup_scale = 1.1
 
         # Темп роста стоимости пришельцев
-        self.score_scale = 1.5
+        self.score_scale = 1
 
         self.initialize_dynamic_settings()
 

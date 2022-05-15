@@ -1,15 +1,16 @@
 import sys
 import pygame
+from time import sleep
 
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
-from time import sleep
 from button import Button
 from scoreboard import Scoreboard
 
 from game_stats import GameStats
 from settings import Settings
+
 
 
 class AlienInvasion:
@@ -78,6 +79,8 @@ class AlienInvasion:
             self._create_fleet()
             self.ship.center_ship()
             self.sb.prep_score()
+            self.sb.prep_level()
+            self.sb.prep_ships()
 
             self.settings.initialize_dynamic_settings()
 
@@ -193,15 +196,21 @@ class AlienInvasion:
                 self.stats.score += self.settings.alien_points * len(alien)
 
             self.sb.prep_score()
-            # self.sb.check_high_score()
+            self.sb.check_high_score()
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
             self.settings.increase_speed()
 
+            # Увеличение уровня.
+            self.stats.level += 1
+            self.sb.prep_level()
+
     def _ship_hit(self):
         if self.stats.ships_left > 0:
+            # Уменьшение ships_left и обновление панели счета
             self.stats.ships_left -= 1
+            self.sb.prep_ships()
 
             self.aliens.empty()
             self.bullets.empty()
